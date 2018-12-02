@@ -1,4 +1,4 @@
-package com.sattler.crowdtwist;
+package net.sattler22.crowdtwist;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -8,10 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 
 /**
  * Pixel color attributes, mixes and breakdowns
@@ -161,20 +157,17 @@ public enum PixelColor {
         public boolean equals(Object other) {
             if (this == other)
                 return true;
+            if (other == null)
+                return false;
             if (this.getClass() != other.getClass())
                 return false;
             final PixelColorKeyPair that = (PixelColorKeyPair) other;
-            return new EqualsBuilder().append(this.pixelColor1, that.pixelColor1).append(this.pixelColor2, that.pixelColor2).isEquals();
+            return Objects.equals(this.pixelColor1, that.pixelColor1) && Objects.equals(this.pixelColor2, that.pixelColor2);
         }
 
         @Override
         public String toString() {
-            return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+            return String.format("%s [pixelColor1=%s, pixelColor2=%s]", getClass().getSimpleName(), pixelColor1, pixelColor2);
         }
-    }
-
-    @Override
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 }

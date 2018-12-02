@@ -1,6 +1,6 @@
-package com.sattler.crowdtwist;
+package net.sattler22.crowdtwist;
 
-import static com.sattler.crowdtwist.PixelColor.EMPTY;
+import static net.sattler22.crowdtwist.PixelColor.EMPTY;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -10,13 +10,10 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sattler.crowdtwist.Pixel.MoveInstruction;
+import net.sattler22.crowdtwist.Pixel.MoveInstruction;
 
 /**
  * Crowd Twist Animation Challenge 2018
@@ -146,11 +143,11 @@ public final class Animation implements Serializable {
         if (this.getClass() != other.getClass())
             return false;
         final Animation that = (Animation) other;
-        return new EqualsBuilder().append(this.speed, that.speed).append(this.initialValue, that.initialValue).isEquals();
+        return this.speed == that.speed && Arrays.deepEquals(this.initialValue, that.initialValue);
     }
 
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+        return String.format("%s [speed=%s, emptyPixel=%s, initialValue=%s]", getClass().getSimpleName(), speed, emptyPixel, Arrays.toString(initialValue));
     }
 }

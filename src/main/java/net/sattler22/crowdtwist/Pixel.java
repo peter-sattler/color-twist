@@ -1,15 +1,11 @@
-package com.sattler.crowdtwist;
+package net.sattler22.crowdtwist;
 
-import static com.sattler.crowdtwist.PixelColor.EMPTY;
+import static net.sattler22.crowdtwist.PixelColor.EMPTY;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 
 /**
  * A pixel has speed and color. A composite color is represented by its primary color components.
@@ -113,7 +109,7 @@ public final class Pixel implements Serializable {
 
         @Override
         public String toString() {
-            return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+            return String.format("%s [pixel=%s]", getClass().getSimpleName(), pixel);
         }
     }
 
@@ -129,7 +125,7 @@ public final class Pixel implements Serializable {
         if (this.getClass() != other.getClass())
             return false;
         final Pixel that = (Pixel) other;
-        return new EqualsBuilder().append(this.primaryColor1, that.primaryColor1).append(this.primaryColor2, that.primaryColor2).isEquals();
+        return this.primaryColor1 == that.primaryColor1 && this.primaryColor2 == that.primaryColor2;
     }
 
     @Override

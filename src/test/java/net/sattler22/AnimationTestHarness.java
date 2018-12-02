@@ -1,10 +1,12 @@
-package com.sattler.crowdtwist;
+package net.sattler22;
 
 import static org.junit.Assert.assertArrayEquals;
 
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import net.sattler22.crowdtwist.Animation;
 
 /**
  * Crowd Twist Animation Challenge 2018 Test Harness
