@@ -122,6 +122,8 @@ public final class Pixel implements Serializable {
     public boolean equals(Object other) {
         if (this == other)
             return true;
+        if (other == null)
+            return false;
         if (this.getClass() != other.getClass())
             return false;
         final Pixel that = (Pixel) other;
