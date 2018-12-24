@@ -27,3 +27,7 @@ You may assume the following constraints:
 - speed will be between 1 and 10 inclusive
 - init will contain between 1 and 50 characters inclusive
 - each character in init will be '.' or 'Y', 'R' or 'O'
+
+Pete Sattler  
+November 2018  
+_peter@sattler22.net_
