@@ -1,13 +1,12 @@
 # Crowd Twist Animation Challenge 2018
 
-Consider a screen with single row of pixels. Pixels can be either Red or Yellow colors. We have to animate the pixels using the following rules :
-Red pixels can only move to the right.
+Consider a screen with single row of pixels. Pixels can be either Red or Yellow colors. We have to animate the pixels using the following rules:
 
-
-1. Yellow pixels can only move to the left.
-2. Both color pixels will move at the same speed.
-3. The pixels can pass through each other. So if the Red and Yellow colors occupy the SAME pixel then we have to display Orange color.
-4. You will be given the initial conditions by a String init containing at each position a 'Y' for a leftward moving yellow pixel, an 'R' for a rightward
+1. Red pixels can only move to the right.
+2. Yellow pixels can only move to the left.
+3. Both color pixels will move at the same speed.
+4. The pixels can pass through each other. So if the Red and Yellow colors occupy the SAME pixel then we have to display Orange color.
+5. You will be given the initial conditions by a String init containing at each position a 'Y' for a leftward moving yellow pixel, an 'R' for a rightward
 moving Red pixel, or a '.' for an empty pixel. init shows all the positions on the screen. Initially, no location on the screen contains the two color
 pixels passing through each other.
 
