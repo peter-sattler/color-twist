@@ -1,4 +1,4 @@
-# Crowd Twist Animation Challenge 2018
+# Crowd Twist Animation Challenge
 
 Consider a screen with single row of pixels. Pixels can be either Red or Yellow colors. We have to animate the pixels using the following rules:
 
