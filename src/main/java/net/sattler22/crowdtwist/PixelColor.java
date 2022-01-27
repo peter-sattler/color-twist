@@ -1,6 +1,5 @@
 package net.sattler22.crowdtwist;
 
-import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -11,13 +10,16 @@ import java.util.Optional;
 
 /**
  * Pixel color attributes, mixes and breakdowns
- * 
+ *
  * @author Pete Sattler
  * @version Fall 2018
  */
 public enum PixelColor {
 
-    RED("R", true, 1), YELLOW("Y", true, -1), ORANGE("O", false, 0), EMPTY(".", false, 0);
+    RED("R", true, 1),
+    YELLOW("Y", true, -1),
+    ORANGE("O", false, 0),
+    EMPTY(".", false, 0);
 
     private String id;
     private boolean primary;
@@ -45,16 +47,14 @@ public enum PixelColor {
 
     /**
      * Look-up a pixel color
-     * 
+     *
      * @param id The pixel color unique identifier
      */
     public static Optional<PixelColor> lookup(String id) {
         Objects.requireNonNull(id);
-        for (PixelColor pixelColor : PixelColor.values()) {
-            if (id.equals(pixelColor.id)) {
+        for (final var pixelColor : PixelColor.values())
+            if (id.equals(pixelColor.id))
                 return Optional.of(pixelColor);
-            }
-        }
         return Optional.empty();
     }
 
@@ -75,7 +75,7 @@ public enum PixelColor {
 
     /**
      * Primary color check
-     * 
+     *
      * @return True if the color is a primary color
      */
     public boolean isPrimary() {
@@ -116,7 +116,7 @@ public enum PixelColor {
 
     /**
      * Pixel color movement check
-     * 
+     *
      * @return True if color moves either LEFT or RIGHT
      */
     public boolean hasMovement() {
@@ -125,7 +125,7 @@ public enum PixelColor {
 
     /**
      * Get pixel color direction
-     * 
+     *
      * @param speed The number of positions each pixel moves in one unit time (no direction)
      * @return The speed with the color's directional multiplier applied; negative for LEFT and positive for RIGHT
      */
@@ -136,9 +136,8 @@ public enum PixelColor {
     /**
      * Pixel color key pair
      */
-    static class PixelColorKeyPair implements Serializable {
+    static class PixelColorKeyPair {
 
-        private static final long serialVersionUID = 5118273244158259056L;
         private PixelColor pixelColor1;
         private PixelColor pixelColor2;
 
@@ -161,7 +160,7 @@ public enum PixelColor {
                 return false;
             if (this.getClass() != other.getClass())
                 return false;
-            final PixelColorKeyPair that = (PixelColorKeyPair) other;
+            final var that = (PixelColorKeyPair) other;
             return Objects.equals(this.pixelColor1, that.pixelColor1) && Objects.equals(this.pixelColor2, that.pixelColor2);
         }
 

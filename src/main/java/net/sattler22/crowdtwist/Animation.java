@@ -2,52 +2,49 @@ package net.sattler22.crowdtwist;
 
 import static net.sattler22.crowdtwist.PixelColor.EMPTY;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import net.sattler22.crowdtwist.Pixel.MoveInstruction;
+import net.jcip.annotations.Immutable;
 
 /**
  * Crowd Twist Animation Challenge 2018
- * 
+ *
  * @author Pete Sattler
  * @version Fall 2018
- * @implSpec This class is immutable and thread-safe
  */
-public final class Animation implements Serializable {
+@Immutable
+public final class Animation {
 
-    private static final long serialVersionUID = -7744637730300100216L;
-    private static final Logger LOGGER = LoggerFactory.getLogger(Animation.class);
+    private static final Logger logger = LoggerFactory.getLogger(Animation.class);
     private final int speed;
     private final Pixel emptyPixel;
     private final Pixel[] initialValue;
 
     /**
      * Constructs a new totally awesome Crowd Twist animation
-     * 
+     *
      * @param speed The number of positions each pixel moves in one unit time (no direction)
      * @param initialString The initial animation string. Any illegal characters are replaced by an <code>EMPTY</code> pixel.
      */
     public Animation(int speed, String initialString) {
         this.speed = speed;
-        this.emptyPixel = Pixel.empty(speed);  // Might as well store this once and reuse it
+        this.emptyPixel = Pixel.empty(speed);  //Might as well store this once and reuse it
         int index = 0;
         this.initialValue = new Pixel[initialString.length()];
-        for (String id : initialString.split("")) {
-            Optional<PixelColor> pixelColor = PixelColor.lookup(id);
+        for (final var id : initialString.split("")) {
+            final var pixelColor = PixelColor.lookup(id);
             if (pixelColor.isPresent()) {
-                Pixel pixel = Pixel.of(speed, pixelColor.get());
+                final var pixel = Pixel.of(speed, pixelColor.get());
                 this.initialValue[index] = pixel;
             } else {
-                LOGGER.warn("Substituting an empty pixel for a missing one");
+                logger.warn("Substituting an empty pixel for a missing one");
                 this.initialValue[index] = emptyPixel;
             }
             index++;
@@ -56,19 +53,18 @@ public final class Animation implements Serializable {
 
     /**
      * Run the animation
-     * 
+     *
      * @return An array of String pixel color IDs representing the animation sequence
      */
     public String[] animate() {
-        List<String> resultList = new ArrayList<>();
-        Pixel[] row = initialValue;
+        final List<String> resultList = new ArrayList<>();
+        var row = initialValue;
         resultList.add(pixelArray2String(row));
-        while (!isComplete(row = animateOneRow(row))) {
+        while (!isComplete(row = animateOneRow(row)))
             resultList.add(pixelArray2String(row));
-        }
         if (!isComplete(initialValue))
             resultList.add(pixelArray2String(row));
-        String[] resultArray = new String[resultList.size()];
+        final var resultArray = new String[resultList.size()];
         return resultList.toArray(resultArray);
     }
 
@@ -78,15 +74,14 @@ public final class Animation implements Serializable {
     private static String pixelArray2String(Pixel[] pixels) {
         return Arrays.stream(pixels).map(pixel -> pixel.mixColor().getId()).collect(Collectors.joining());
     }
-    
+
     /**
      * Animation complete check
      */
     private static boolean isComplete(Pixel[] pixels) {
-        for (Pixel pixel : pixels) {
+        for (final var pixel : pixels)
             if (pixel.mixColor() != EMPTY)
                 return false;
-        }
         return true;
     }
 
@@ -94,19 +89,19 @@ public final class Animation implements Serializable {
      * Animate a single row
      */
     private Pixel[] animateOneRow(final Pixel[] pixels) {
-        Pixel[] result = new Pixel[pixels.length];
+        final var result = new Pixel[pixels.length];
         Arrays.fill(result, emptyPixel);
         //Loop thru all pixels in the row:
-        for (int currentIndex = 0; currentIndex < pixels.length; currentIndex++) {
-            final Pixel pixel = pixels[currentIndex];
+        for (var currentIndex = 0; currentIndex < pixels.length; currentIndex++) {
+            final var pixel = pixels[currentIndex];
             if (pixel.hasMovement()) {
-                List<MoveInstruction> moveInstructions = pixel.getMoveInstructions();
-                for (MoveInstruction moveInstruction : moveInstructions) {
-                    final int targetIndex = currentIndex + moveInstruction.getDirection();
+                final var moveInstructions = pixel.getMoveInstructions();
+                for (final var moveInstruction : moveInstructions) {
+                    final var targetIndex = currentIndex + moveInstruction.getDirection();
                     if (isOnDisplay(targetIndex)) {
                         //Mix together the color already at the target position with the color moving there:
-                        final PixelColor existingTargetColor = result[targetIndex].mixColor();
-                        final PixelColor mixedColor = existingTargetColor.mix(moveInstruction.getPixel().mixColor());
+                        final var existingTargetColor = result[targetIndex].mixColor();
+                        final var mixedColor = existingTargetColor.mix(moveInstruction.getPixel().mixColor());
                         result[targetIndex] = Pixel.of(speed, mixedColor);
                     }
                 }
@@ -124,7 +119,7 @@ public final class Animation implements Serializable {
 
     /**
      * Get speed
-     * 
+     *
      * @return The number of positions each pixel moves in one unit time (no direction)
      */
     public int getSpeed() {
@@ -144,7 +139,7 @@ public final class Animation implements Serializable {
             return false;
         if (this.getClass() != other.getClass())
             return false;
-        final Animation that = (Animation) other;
+        final var that = (Animation) other;
         return this.speed == that.speed && Arrays.deepEquals(this.initialValue, that.initialValue);
     }
 

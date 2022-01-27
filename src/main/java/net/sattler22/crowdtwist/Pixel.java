@@ -2,28 +2,28 @@ package net.sattler22.crowdtwist;
 
 import static net.sattler22.crowdtwist.PixelColor.EMPTY;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import net.jcip.annotations.Immutable;
+
 /**
  * A pixel has speed and color. A composite color is represented by its primary color components.
- * 
+ *
  * @author Pete Sattler
  * @version Fall 2018
- * @implSpec This class is immutable and thread-safe
  */
-public final class Pixel implements Serializable {
+@Immutable
+public final class Pixel {
 
-    private static final long serialVersionUID = 5968750560753632257L;
     private final int speed;
     private final PixelColor primaryColor1;
     private final PixelColor primaryColor2;
 
     /**
      * New pixel factory
-     * 
+     *
      * @param speed The number of positions each pixel moves in one unit time (no direction)
      * @param pixelColor Any supported primary or composite pixel color
      * @return A new pixel with either a single primary color or a composite color represented by two primary colors
@@ -33,13 +33,13 @@ public final class Pixel implements Serializable {
         if (pixelColor == EMPTY || pixelColor.isPrimary())
             return new Pixel(speed, pixelColor, EMPTY);
         //Otherwise break the composite color into its primary color components:
-        List<PixelColor> primaryColors = PixelColor.findPrimaryColors(pixelColor);
+        final var primaryColors = PixelColor.findPrimaryColors(pixelColor);
         return new Pixel(speed, primaryColors.get(0), primaryColors.get(1));
     }
 
     /**
      * Empty pixel factory
-     * 
+     *
      * @param speed The number of positions each pixel moves in one unit time (no direction)
      * @return A new pixel with the given speed and both primary colors set to <code>EMPTY</code>
      */
@@ -62,7 +62,7 @@ public final class Pixel implements Serializable {
 
     /**
      * Pixel movement check
-     * 
+     *
      * @return True if the pixel moves either LEFT or RIGHT
      */
     public boolean hasMovement() {
@@ -78,11 +78,11 @@ public final class Pixel implements Serializable {
 
     /**
      * Generate move instruction
-     * 
+     *
      * @return A list of instructions used to move the pixel according to its speed and direction
      */
     public List<MoveInstruction> getMoveInstructions() {
-        List<MoveInstruction> moveInstructions = new ArrayList<>();
+        final List<MoveInstruction> moveInstructions = new ArrayList<>();
         if (primaryColor1 != EMPTY)
             moveInstructions.add(new MoveInstruction(speed, primaryColor1));
         if (primaryColor2 != EMPTY)
@@ -90,9 +90,8 @@ public final class Pixel implements Serializable {
         return moveInstructions;
     }
 
-    static class MoveInstruction implements Serializable {
+    static class MoveInstruction {
 
-        private static final long serialVersionUID = 7223598937349559794L;
         private Pixel pixel;
 
         private MoveInstruction(int speed, PixelColor pixelColor) {
@@ -126,7 +125,7 @@ public final class Pixel implements Serializable {
             return false;
         if (this.getClass() != other.getClass())
             return false;
-        final Pixel that = (Pixel) other;
+        final var that = (Pixel) other;
         return this.primaryColor1 == that.primaryColor1 && this.primaryColor2 == that.primaryColor2;
     }
 
