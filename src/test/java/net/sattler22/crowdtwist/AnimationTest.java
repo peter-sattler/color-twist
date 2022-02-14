@@ -81,14 +81,14 @@ final class AnimationTest {
         checkAnimation(testCaseNbr, speed, expected[0], expected);
     }
 
-    private void checkAnimation(int testCaseNbr, int speed, String initialString, String[] expected) {
+    private static void checkAnimation(int testCaseNbr, int speed, String initialString, String[] expected) {
         final var animation = new Animation(speed, initialString);
         final var actual = animation.animate();
         assertArrayEquals(expected, actual);
         displayAnimation(testCaseNbr, speed, actual);
     }
 
-    private void displayAnimation(int testCaseNbr, int speed, String[] actual) {
+    private static void displayAnimation(int testCaseNbr, int speed, String[] actual) {
         var time = 0;
         logger.info("Test Case: {}, Speed={}", testCaseNbr, speed);
         for(final var s : actual)

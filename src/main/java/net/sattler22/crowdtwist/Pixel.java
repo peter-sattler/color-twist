@@ -90,6 +90,9 @@ public final class Pixel {
         return moveInstructions;
     }
 
+    /**
+     * Move instruction
+     */
     static class MoveInstruction {
 
         private Pixel pixel;
