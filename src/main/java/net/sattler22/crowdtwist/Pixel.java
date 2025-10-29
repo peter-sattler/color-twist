@@ -1,25 +1,17 @@
 package net.sattler22.crowdtwist;
 
-import static net.sattler22.crowdtwist.PixelColor.EMPTY;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import net.jcip.annotations.Immutable;
-
 /**
- * A pixel has speed and color. A composite color is represented by its primary color components.
+ * A <code>Pixel</code> has speed and color. A composite color is represented by its primary color components.
  *
  * @author Pete Sattler
- * @version Fall 2018
+ * @version October 2025
+ * @since Fall 2018
  */
-@Immutable
-public final class Pixel {
-
-    private final int speed;
-    private final PixelColor primaryColor1;
-    private final PixelColor primaryColor2;
+public record Pixel(int speed, PixelColor primaryColor1, PixelColor primaryColor2) {
 
     /**
      * New pixel factory
@@ -30,11 +22,11 @@ public final class Pixel {
      */
     public static Pixel of(int speed, PixelColor pixelColor) {
         Objects.requireNonNull(pixelColor);
-        if (pixelColor == EMPTY || pixelColor.isPrimary())
-            return new Pixel(speed, pixelColor, EMPTY);
+        if (pixelColor == PixelColor.EMPTY || pixelColor.isPrimary())
+            return new Pixel(speed, pixelColor, PixelColor.EMPTY);
         //Otherwise break the composite color into its primary color components:
-        final var primaryColors = PixelColor.findPrimaryColors(pixelColor);
-        return new Pixel(speed, primaryColors.get(0), primaryColors.get(1));
+        final List<PixelColor> primaryColors = PixelColor.findPrimaryColors(pixelColor);
+        return new Pixel(speed, primaryColors.getFirst(), primaryColors.get(1));
     }
 
     /**
@@ -44,24 +36,11 @@ public final class Pixel {
      * @return A new pixel with the given speed and both primary colors set to <code>EMPTY</code>
      */
     public static Pixel empty(int speed) {
-        return new Pixel(speed, EMPTY, PixelColor.EMPTY);
-    }
-
-    private Pixel(int speed, PixelColor primaryColor1, PixelColor primaryColor2) {
-        this.speed = speed;
-        this.primaryColor1 = primaryColor1;
-        this.primaryColor2 = primaryColor2;
+        return new Pixel(speed, PixelColor.EMPTY, PixelColor.EMPTY);
     }
 
     /**
-     * Get the number of positions each pixel moves in one unit time (no direction)
-     */
-    public int getSpeed() {
-        return speed;
-    }
-
-    /**
-     * Pixel movement check
+     * Pixel movement condition check
      *
      * @return True if the pixel moves either LEFT or RIGHT
      */
@@ -70,22 +49,22 @@ public final class Pixel {
     }
 
     /**
-     * Mix together the two primary colors
+     * Mix the two primary colors together
      */
     public PixelColor mixColor() {
         return primaryColor1.mix(primaryColor2);
     }
 
     /**
-     * Generate move instruction
+     * Generate move instructions
      *
      * @return A list of instructions used to move the pixel according to its speed and direction
      */
-    public List<MoveInstruction> getMoveInstructions() {
+    public List<MoveInstruction> moveInstructions() {
         final List<MoveInstruction> moveInstructions = new ArrayList<>();
-        if (primaryColor1 != EMPTY)
+        if (primaryColor1 != PixelColor.EMPTY)
             moveInstructions.add(new MoveInstruction(speed, primaryColor1));
-        if (primaryColor2 != EMPTY)
+        if (primaryColor2 != PixelColor.EMPTY)
             moveInstructions.add(new MoveInstruction(speed, primaryColor2));
         return moveInstructions;
     }
@@ -93,19 +72,19 @@ public final class Pixel {
     /**
      * Move instruction
      */
-    static class MoveInstruction {
+    public static class MoveInstruction {
 
-        private Pixel pixel;
+        private final Pixel pixel;
 
         private MoveInstruction(int speed, PixelColor pixelColor) {
             this.pixel = Pixel.of(speed, pixelColor);
         }
 
-        public int getDirection() {
-            return pixel.mixColor().getDirection(pixel.getSpeed());
+        public int direction() {
+            return pixel.mixColor().direction(pixel.speed());
         }
 
-        public Pixel getPixel() {
+        public Pixel pixel() {
             return pixel;
         }
 
@@ -113,27 +92,5 @@ public final class Pixel {
         public String toString() {
             return String.format("%s [pixel=%s]", getClass().getSimpleName(), pixel);
         }
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(primaryColor1, primaryColor2);
-    }
-
-    @Override
-    public boolean equals(Object other) {
-        if (this == other)
-            return true;
-        if (other == null)
-            return false;
-        if (this.getClass() != other.getClass())
-            return false;
-        final var that = (Pixel) other;
-        return this.primaryColor1 == that.primaryColor1 && this.primaryColor2 == that.primaryColor2;
-    }
-
-    @Override
-    public String toString() {
-        return mixColor().getId();
     }
 }

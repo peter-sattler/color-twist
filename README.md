@@ -1,31 +1,34 @@
 # Color Twist Animation
 
-Consider a screen with single row of pixels. Pixels can be either Red or Yellow colors. We have to animate the pixels using the following rules:
+Consider a screen with a single row of pixels. Pixels can be either Red or Yellow. Animate the pixels using the 
+following rules:
 
-1. Red pixels can only move to the right.
-2. Yellow pixels can only move to the left.
+1. Red pixels can only move to the RIGHT.
+2. Yellow pixels can only move to the LEFT.
 3. Both color pixels will move at the same speed.
-4. The pixels can pass through each other. So if the Red and Yellow colors occupy the SAME pixel then we have to display Orange color.
-5. You will be given the initial conditions by a String init containing at each position a 'Y' for a leftward moving yellow pixel, an 'R' for a rightward
-moving Red pixel, or a '.' for an empty pixel. init shows all the positions on the screen. Initially, no location on the screen contains the two color
-pixels passing through each other.
+4. The pixels can pass through each other. So if the Red and Yellow colors occupy the SAME pixel, then Orange should be 
+displayed.
+5. The initial state at each position will be given; a 'Y' for a leftward moving Yellow pixel, an 'R' for a rightward 
+moving Red pixel or a '.' (dot) for an empty pixel. All positions on the screen will be shown. Initially, 
+no location will contain two color pixels passing through each other.
 
-We would like an animation of the process. At each unit of time, we want a string showing occupied locations with either a 'R' , 'Y' or 'O' (if the two
-colors occupy same pixel) and unoccupied locations with a '.'. Create a class Animation that contains a method animate that is given an initial
-speed and a String init giving the initial conditions. The speed is the number of positions each particle moves in one time unit.
+Create an animation of the process. At each unit of time, show occupied locations with either an 'R', 'Y' or 'O' (if 
+two colors occupy the SAME pixel) and unoccupied locations with a '.' (dot). Start with a class called Animation that 
+contains an animate method that is given an initial speed and initial state. The speed is the number of positions each 
+particle moves in one unit of time. 
 
-The method will return an array of strings in which each successive element shows the occupied locations at the next time unit. The first element
-of the return should show the occupied locations at the initial instant (at time = 0) in the 'Y','R', '.' format. The last element in the return should
-show the empty screen at the first time that it becomes empty.
+The method will return an array of strings in which each successive element shows the occupied locations at the next 
+unit of time. The FIRST element should show the occupied locations at the initial instant (at time = 0) in 
+the 'R', 'Y', '.' format. The LAST element should show the empty screen the first time that it becomes empty.
 
-Class: Animation
+CLASS: Animation
 
-Method: animate(speed, init), where speed is an integer and init is a String.
+METHOD: animate(speed, init), where speed is an integer and init is a String.
 
-You may assume the following constraints:
-- speed will be between 1 and 10 inclusive
-- init will contain between 1 and 50 characters inclusive
-- each character in init will be '.' or 'Y', 'R' or 'O'
+ASSUMPTIONS:
+- speed will be between 1 and 10 (inclusive)
+- init (initial state) will contain between 1 and 50 characters (inclusive)
+- Each character in the initial state will be 'R', 'Y' or '.' (dot).
 
 Pete Sattler  
 November 2018  
