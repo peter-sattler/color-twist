@@ -1,19 +1,16 @@
 package net.sattler22.crowdtwist;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
 /**
- * Pixel color attributes, mixes and breakdowns
+ * Pixel color attributes, definitions and breakdowns
  *
  * @author Pete Sattler
- * @version October 2025
  * @since Fall 2018
+ * @version May 2026
  */
 public enum PixelColor {
 
@@ -26,14 +23,13 @@ public enum PixelColor {
     private final boolean primary;
     private final int directionalMultiplier;
 
-    private static final Map<PixelColorKeyPair, PixelColor> PRIMARY_COLOR_MIXING_MAP = new HashMap<>();
-    static {
-        PRIMARY_COLOR_MIXING_MAP.put(new PixelColorKeyPair(RED, YELLOW), ORANGE);
-        PRIMARY_COLOR_MIXING_MAP.put(new PixelColorKeyPair(YELLOW, RED), ORANGE);
-    }
-
-    private static final Map<PixelColor, List<PixelColor>> COMPOSITE_COLOR_BREAKDOWN_MAP =
-            Collections.singletonMap(ORANGE, Arrays.asList(RED, YELLOW));
+    //IMPORTANT: Remember to update this when adding a new color!!!
+    private static final Map<String, PixelColor> COLORS_BY_ID = Map.of(
+            RED.id, RED,
+            YELLOW.id, YELLOW,
+            ORANGE.id, ORANGE,
+            EMPTY.id, EMPTY
+    );
 
     PixelColor(String id, boolean primary, int directionalMultiplier) {
         this.id = id;
@@ -41,28 +37,45 @@ public enum PixelColor {
         this.directionalMultiplier = directionalMultiplier;
     }
 
+    private static final Map<PixelColorPair, PixelColor> PRIMARY_COLORS = Map.of(
+            new PixelColorPair(RED, YELLOW), ORANGE,
+            new PixelColorPair(YELLOW, RED), ORANGE
+    );
+
+    private static final Map<PixelColor, List<PixelColor>> COMPOSITE_COLOR_BREAKDOWN = Map.of(
+            ORANGE, List.of(RED, YELLOW)
+    );
+
     /**
-     * Look-up a pixel color
+     * Pixel color pair
      *
-     * @param id The pixel color unique identifier
+     * @param first The first pixel color
+     * @param second The second pixel color
      */
-    public static Optional<PixelColor> lookup(String id) {
-        Objects.requireNonNull(id);
-        for (final PixelColor pixelColor : PixelColor.values())
-            if (id.equals(pixelColor.id))
-                return Optional.of(pixelColor);
-        return Optional.empty();
+    record PixelColorPair(PixelColor first, PixelColor second) {
     }
 
     /**
-     * Find primary color breakdown
+     * Look-up a pixel color by its identifier
      *
-     * @param pixelColor The pixel color
+     * @param id The matching color unique identifier (if present)
+     */
+    public static Optional<PixelColor> lookup(String id) {
+        Objects.requireNonNull(id, "ID is required");
+        return Optional.ofNullable(COLORS_BY_ID.get(id));
+    }
+
+    /**
+     * Find primary color breakdown for a composite color
+     *
+     * @param compositeColor The composite color
      * @return One or more primary color components
      */
-    public static List<PixelColor> findPrimaryColors(PixelColor pixelColor) {
-        requireCompositeColor(pixelColor);
-        return COMPOSITE_COLOR_BREAKDOWN_MAP.get(pixelColor);
+    public static List<PixelColor> findPrimaryColors(PixelColor compositeColor) {
+        Objects.requireNonNull(compositeColor, "Composite color is required");
+        if (compositeColor.isEmpty() || compositeColor.isPrimary())
+            throw new IllegalArgumentException("%s is not a composite color".formatted(compositeColor.name()));
+        return COMPOSITE_COLOR_BREAKDOWN.get(compositeColor);
     }
 
     /**
@@ -70,6 +83,15 @@ public enum PixelColor {
      */
     public String id() {
         return id;
+    }
+
+    /**
+     * Empty pixel condition check
+     *
+     * @return True if the pixel is a empty. Otherwise, returns false.
+     */
+    public boolean isEmpty() {
+        return this == EMPTY;
     }
 
     /**
@@ -84,40 +106,30 @@ public enum PixelColor {
     /**
      * Mix two primary colors together
      *
-     * @param mixInColor The pixel color to mix in
+     * @param other The primary color to mix in
      * @return The mixed color
      */
-    public PixelColor mix(PixelColor mixInColor) {
-        if (this == mixInColor)
+    public PixelColor mix(PixelColor other) {
+        Objects.requireNonNull(other, "Mix in color is required");
+        if (this == other)
             return this;
         if (this == EMPTY)
-            return mixInColor;
-        if (mixInColor == EMPTY)
+            return other;
+        if (other == EMPTY)
             return this;
-        if (!this.isPrimary())
-            requirePrimaryColor(this);
-        if (!mixInColor.isPrimary())
-            requirePrimaryColor(mixInColor);
-        return PRIMARY_COLOR_MIXING_MAP.get(new PixelColorKeyPair(this, mixInColor));
+        requirePrimaryColor(this);
+        requirePrimaryColor(other);
+        return PRIMARY_COLORS.get(new PixelColorPair(this, other));
     }
 
     private static void requirePrimaryColor(PixelColor pixelColor) {
-        if (!pixelColor.isPrimary())
-            requireColorType(pixelColor, "primary");
-    }
-
-    private static void requireCompositeColor(PixelColor pixelColor) {
-        if (pixelColor.isPrimary())
-            requireColorType(pixelColor, "composite");
-    }
-
-    private static void requireColorType(PixelColor pixelColor, String pixelColorType) {
         Objects.requireNonNull(pixelColor, "Pixel color is required");
-        throw new IllegalArgumentException(String.format("%s is not a %s color", pixelColor.name(), pixelColorType));
+        if (!pixelColor.isPrimary())
+            throw new IllegalArgumentException("%s is not a primary color".formatted(pixelColor.name()));
     }
 
     /**
-     * Pixel color movement condition check
+     * Pixel movement condition check
      *
      * @return True if color moves either LEFT or RIGHT
      */
@@ -126,18 +138,12 @@ public enum PixelColor {
     }
 
     /**
-     * Get pixel color direction
+     * Applies pixel direction to the given speed
      *
      * @param speed The number of positions each pixel moves in one unit time (no direction)
      * @return The speed with the color's directional multiplier applied; negative for LEFT and positive for RIGHT
      */
     public int direction(int speed) {
         return speed * directionalMultiplier;
-    }
-
-    /**
-     * Pixel color key pair
-     */
-    record PixelColorKeyPair(PixelColor pixelColor1, PixelColor pixelColor2) {
     }
 }

@@ -17,7 +17,7 @@ two colors occupy the SAME pixel) and unoccupied locations with a '.' (dot). Sta
 contains an animate method that is given an initial speed and initial state. The speed is the number of positions each 
 particle moves in one unit of time. 
 
-The method will return an array of strings in which each successive element shows the occupied locations at the next 
+The method will return a list of strings in which each successive element shows the occupied locations at the next 
 unit of time. The FIRST element should show the occupied locations at the initial instant (at time = 0) in 
 the 'R', 'Y', '.' format. The LAST element should show the empty screen the first time that it becomes empty.
 
