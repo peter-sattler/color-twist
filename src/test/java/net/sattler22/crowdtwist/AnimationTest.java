@@ -21,47 +21,48 @@ final class AnimationTest {
 
     @Test
     void animate_whenSingleRedPixel_thenSuccessful() {
+        final int speed = 2;
         final List<String> expected = List.of(
                 "..R....",
                 "....R..",
                 "......R",
                 "......."
         );
-        final Animation animation = new Animation(2, expected.getFirst());
-        checkAnimation(10, animation, expected);
+        displayAnimation(10, speed, checkAnimation(speed, expected));
     }
 
     @Test
     void animate_whenFivePixelsPassingThruEachOther_thenSuccessful() {
+        final int speed = 3;
         final List<String> expected = List.of(
                 "RR..YRY",
                 ".Y.OR..",
                 "Y.....R",
                 "......."
         );
-        final Animation animation = new Animation(3, expected.getFirst());
-        checkAnimation(20, animation, expected);
+        displayAnimation(20, speed, checkAnimation(speed, expected));
     }
 
     @Test
     void animate_whenAllPixelsExitByTimeOne_thenSuccessful() {
+        final int speed = 10;
         final List<String> expected = List.of(
                 "RYRYRYRYRY",
                 ".........."
         );
-        final Animation animation = new Animation(10, expected.getFirst());
-        checkAnimation(30, animation, expected);
+        displayAnimation(30, speed, checkAnimation(speed, expected));
     }
 
     @Test
     void animate_whenInitialPixelsAreEmpty_thenNoAnimation() {
+        final int speed = 10;
         final List<String> expected = List.of("...");
-        final Animation animation = new Animation(10, expected.getFirst());
-        checkAnimation(40, animation, expected);
+        displayAnimation(40, speed, checkAnimation(speed, expected));
     }
 
     @Test
     void animate_whenWelcomeToTheGrandIllusion_thenSuccessful() {
+        final int speed = 1;
         final List<String> expected = List.of(
                 "YRRY.YR.YRR.R.YRRY.",
                 "..ORY..O..RR.O..OR.",
@@ -83,20 +84,20 @@ final class AnimationTest {
                 "Y.................R",
                 "..................."
         );
-        final Animation animation = new Animation(1, expected.getFirst());
-        checkAnimation(77, animation, expected);  //Styx it to the man!!! ;)
+        displayAnimation(77, speed, checkAnimation(speed, expected));  //Styx it to the man!!! ;)
     }
 
-    private static void checkAnimation(int testCaseNbr, Animation animation, List<String> expected) {
+    private static List<String> checkAnimation(int speed, List<String> expected) {
+        final Animation animation = new Animation(speed, expected.getFirst());
         final List<String> actual = animation.animate();
         assertEquals(expected, actual);
-        displayAnimation(testCaseNbr, animation.speed(), actual);
+        return actual;
     }
 
     private static void displayAnimation(int testCaseNbr, int speed, List<String> rows) {
-        logger.info("==> Animation Results for Test Case #{}", testCaseNbr);
-        int time = 0;
+        logger.info("==> Test Case #{} Animation Results", testCaseNbr);
+        int timeIndex = 0;
         for (final String row : rows)
-            logger.info("Test Case: {}, speed={}, time={}: [{}]", testCaseNbr, speed, String.format("%02d", time++), row);
+            logger.info("time={}, speed={}: [{}]", String.format("%02d", timeIndex++), speed, row);
     }
 }
