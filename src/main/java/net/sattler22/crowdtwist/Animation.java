@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * Crowd Twist Animation Challenge
@@ -21,8 +22,8 @@ public final class Animation {
     private static final Logger logger = LoggerFactory.getLogger(Animation.class);
 
     private final int speed;
-    private final Pixel emptyPixel;
     private final String initialState;
+    private final Pixel emptyPixel;
     private final List<Pixel> initialPixels;
 
     /**
@@ -34,16 +35,16 @@ public final class Animation {
     public Animation(int speed, String initialState) {
         Objects.requireNonNull(initialState, "Initial state is required");
         this.speed = speed;
-        this.emptyPixel = Pixel.empty(speed);  //Might as well store this once and reuse it
         this.initialState = initialState;
+        this.emptyPixel = Pixel.empty(speed);  //Might as well store this once and reuse it
         this.initialPixels = parseInitialPixels(initialState);
     }
 
     private List<Pixel> parseInitialPixels(String state) {
-        final List<Pixel> pixels = new ArrayList<>(state.length());
-        for (final char id : state.toCharArray())
-            pixels.add(parsePixel(String.valueOf(id)));
-        return List.copyOf(pixels);
+        return state.chars()
+                .mapToObj(character -> String.valueOf((char) character))
+                .map(this::parsePixel)
+                .toList();
     }
 
     private Pixel parsePixel(String id) {
@@ -64,27 +65,23 @@ public final class Animation {
         final List<String> frames = new ArrayList<>();
         List<Pixel> currentRow = initialPixels;
         do {
-            frames.add(parseInitialState(currentRow));
+            frames.add(toDisplayString(currentRow));
             currentRow = animateOneRow(currentRow);
         } while (hasVisiblePixels(currentRow));
         if (hasVisiblePixels(initialPixels))
-            frames.add(parseInitialState(currentRow));
+            frames.add(toDisplayString(currentRow));
         return List.copyOf(frames);
     }
 
-    private static String parseInitialState(List<Pixel> pixels) {
-        final StringBuilder builder = new StringBuilder(pixels.size());
-        for (final Pixel pixel : pixels)
-            builder.append(pixel.mixColor().id());
-        return builder.toString();
+    private static String toDisplayString(List<Pixel> pixels) {
+        return pixels.stream()
+                .map(Pixel::mixColor)
+                .map(PixelColor::id)
+                .collect(Collectors.joining());
     }
 
     private static boolean hasVisiblePixels(List<Pixel> pixels) {
-        for (final Pixel pixel : pixels) {
-            if (!pixel.mixColor().isEmpty())
-                return true;
-        }
-        return false;
+        return pixels.stream().anyMatch(pixel -> !pixel.mixColor().isEmpty());
     }
 
     private List<Pixel> animateOneRow(List<Pixel> currentRow) {
@@ -129,15 +126,6 @@ public final class Animation {
         return speed;
     }
 
-    /**
-     * Get the normalized initial state
-     *
-     * @return The initial state with illegal characters are replaced by an {@code EMPTY} pixel
-     */
-    public String initialState() {
-        return initialState;
-    }
-
     @Override
     public int hashCode() {
         return Objects.hash(speed, initialPixels);
@@ -156,7 +144,6 @@ public final class Animation {
 
     @Override
     public String toString() {
-        return "%s [speed=%d, initialState=%s, initialPixels=%s]"
-                .formatted(getClass().getSimpleName(), speed, initialState, initialPixels);
+        return "%s [speed=%d, initialState=%s]".formatted(getClass().getSimpleName(), speed, initialState);
     }
 }

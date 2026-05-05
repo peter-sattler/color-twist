@@ -1,8 +1,8 @@
 package net.sattler22.crowdtwist;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 /**
  * A {@code Pixel} has speed and color. A composite color is represented by its primary color components.
@@ -68,12 +68,11 @@ public record Pixel(int speed, PixelColor primaryColor1, PixelColor primaryColor
      * @return A list of instructions used to move the pixel according to its speed and direction
      */
     public List<MoveInstruction> moveInstructions() {
-        final List<MoveInstruction> moveInstructions = new ArrayList<>(2);
-        if (!primaryColor1.isEmpty())
-            moveInstructions.add(new MoveInstruction(Pixel.of(speed, primaryColor1)));
-        if (!primaryColor2.isEmpty())
-            moveInstructions.add(new MoveInstruction(Pixel.of(speed, primaryColor2)));
-        return List.copyOf(moveInstructions);
+        return Stream.of(primaryColor1, primaryColor2)
+                .filter(color -> !color.isEmpty())
+                .map(color -> Pixel.of(speed, color))
+                .map(MoveInstruction::new)
+                .toList();
     }
 
     /**
