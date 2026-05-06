@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -22,22 +23,24 @@ public final class Animation {
     private static final Logger logger = LoggerFactory.getLogger(Animation.class);
 
     private final int speed;
-    private final String initialState;
     private final Pixel emptyPixel;
     private final List<Pixel> initialPixels;
+    private final String initialState;
 
     /**
      * Constructs a new, totally awesome Crowd Twist animation
      *
      * @param speed The number of positions each pixel moves in one unit of time (no direction)
-     * @param initialState The initial animation state (any illegal characters are replaced by an {@code EMPTY} pixel).
+     * @param initialState The initial animation state (any illegal characters are replaced by an {@code EMPTY} pixel)
      */
     public Animation(int speed, String initialState) {
+        if (speed < 1)
+            throw new IllegalArgumentException("Speed must be positive");
         Objects.requireNonNull(initialState, "Initial state is required");
         this.speed = speed;
-        this.initialState = initialState;
         this.emptyPixel = Pixel.empty(speed);  //Might as well store this once and reuse it
         this.initialPixels = parseInitialPixels(initialState);
+        this.initialState = toDisplayString(initialPixels);
     }
 
     private List<Pixel> parseInitialPixels(String state) {
@@ -107,10 +110,7 @@ public final class Animation {
     }
 
     private List<Pixel> createEmptyRow(int length) {
-        final List<Pixel> row = new ArrayList<>(length);
-        for (int i = 0; i < length; i++)
-            row.add(emptyPixel);
-        return row;
+        return new ArrayList<>(Collections.nCopies(length, emptyPixel));
     }
 
     private static boolean isOnDisplay(int pos, int displayLength) {
@@ -126,6 +126,15 @@ public final class Animation {
         return speed;
     }
 
+    /**
+     * Get the initial state
+     *
+     * @return The initial animation state (any illegal characters are replaced by an {@code EMPTY} pixel)
+     */
+    public String initialState() {
+        return initialState;
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(speed, initialPixels);
@@ -135,8 +144,6 @@ public final class Animation {
     public boolean equals(Object other) {
         if (this == other)
             return true;
-        if (other == null)
-            return false;
         if (!(other instanceof Animation that))
             return false;
         return this.speed == that.speed && initialPixels.equals(that.initialPixels);

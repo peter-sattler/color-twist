@@ -1,9 +1,11 @@
 package net.sattler22.crowdtwist;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Pixel color attributes, definitions and breakdowns
@@ -23,13 +25,9 @@ public enum PixelColor {
     private final boolean primary;
     private final int directionalMultiplier;
 
-    //IMPORTANT: Remember to update this when adding a new color!!!
-    private static final Map<String, PixelColor> COLORS_BY_ID = Map.of(
-            RED.id, RED,
-            YELLOW.id, YELLOW,
-            ORANGE.id, ORANGE,
-            EMPTY.id, EMPTY
-    );
+    private static final Map<String, PixelColor> COLORS_BY_ID =
+            Arrays.stream(values())
+                    .collect(Collectors.toUnmodifiableMap(PixelColor::id, color -> color));
 
     PixelColor(String id, boolean primary, int directionalMultiplier) {
         this.id = id;
@@ -52,7 +50,7 @@ public enum PixelColor {
      * @param first The first pixel color
      * @param second The second pixel color
      */
-    record PixelColorPair(PixelColor first, PixelColor second) {
+    private record PixelColorPair(PixelColor first, PixelColor second) {
     }
 
     /**
@@ -119,7 +117,10 @@ public enum PixelColor {
             return this;
         requirePrimaryColor(this);
         requirePrimaryColor(other);
-        return PRIMARY_COLORS.get(new PixelColorPair(this, other));
+        final PixelColor mixedColor = PRIMARY_COLORS.get(new PixelColorPair(this, other));
+        if (mixedColor == null)
+            throw new IllegalStateException("No mix defined for %s and %s".formatted(this, other));
+        return mixedColor;
     }
 
     private static void requirePrimaryColor(PixelColor pixelColor) {

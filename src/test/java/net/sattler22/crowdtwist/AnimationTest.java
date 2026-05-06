@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Crowd Twist Animation Challenge 2018 Unit Tests
@@ -18,6 +19,40 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 final class AnimationTest {
 
     private static final Logger logger = LoggerFactory.getLogger(AnimationTest.class);
+
+    @Test
+    void newInstance_whenSpeedIsNegative_thenThrowIllegalArgumentException() {
+        checkNewInstanceSpeed(-1);
+    }
+
+    @Test
+    void newInstance_whenSpeedIsZero_thenThrowIllegalArgumentException() {
+        checkNewInstanceSpeed(0);
+    }
+
+    private static void checkNewInstanceSpeed(int speed) {
+        final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
+            new Animation(speed, "R")
+        );
+        assertEquals("Speed must be positive", exception.getMessage());
+    }
+
+    @Test
+    void newInstance_whenInitialStateIsNull_thenThrowNullPointerException() {
+        final NullPointerException exception = assertThrows(NullPointerException.class, () ->
+            new Animation(5, null)
+        );
+        assertEquals("Initial state is required", exception.getMessage());
+    }
+
+    @Test
+    void newInstance_whenHappyPath_thenSuccessful() {
+        final int expectedSpeed = 10;
+        final String expectedInitialState = "R";
+        final Animation animation = new Animation(expectedSpeed, expectedInitialState);
+        assertEquals(expectedSpeed, animation.speed());
+        assertEquals(expectedInitialState, animation.initialState());
+    }
 
     @Test
     void animate_whenSingleRedPixel_thenSuccessful() {
