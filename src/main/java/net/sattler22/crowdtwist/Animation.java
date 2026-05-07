@@ -21,7 +21,6 @@ import java.util.stream.Collectors;
 public final class Animation {
 
     private static final Logger logger = LoggerFactory.getLogger(Animation.class);
-
     private final int speed;
     private final Pixel emptyPixel;
     private final List<Pixel> initialPixels;
